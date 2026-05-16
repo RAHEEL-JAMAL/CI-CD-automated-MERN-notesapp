@@ -6,7 +6,7 @@ pipeline {
         stage('Clone') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/yourname/mern-notes-app.git'
+                    url: 'https://github.com/RAHEEL-JAMAL/CI-CD-automated-MERN-notesapp.git'
             }
         }
 
