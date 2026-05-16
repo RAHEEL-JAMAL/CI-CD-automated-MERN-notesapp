@@ -1,68 +1,33 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKERHUB_USER = 'raheeljamal'
-        SERVER_IP      = '192.168.122.127'
-        SERVER_USER    = 'raheel'
-    }
-
     stages {
 
-        stage('Clone Code') {
+        stage('Clone') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/RAHEEL-JAMAL/CI-CD-automated-MERN-notesapp.git'
+                    url: 'https://github.com/yourname/mern-notes-app.git'
             }
         }
 
-        stage('Build Backend Image') {
+        stage('Build Images') {
             steps {
-                sh 'docker build -t $DOCKERHUB_USER/mern-server ./server'
+                sh 'docker compose -f $WORKSPACE/docker-compose.yml build'
             }
         }
 
-        stage('Build Frontend Image') {
+        stage('Deploy') {
             steps {
-                sh 'docker build -t $DOCKERHUB_USER/mern-client ./client'
-            }
-        }
-
-        stage('Push to Docker Hub') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-cred',
-                    usernameVariable: 'USER',
-                    passwordVariable: 'PASS'
-                )]) {
-                    sh 'echo $PASS | docker login -u $USER --password-stdin'
-                    sh 'docker push $DOCKERHUB_USER/mern-server'
-                    sh 'docker push $DOCKERHUB_USER/mern-client'
-                }
-            }
-        }
-
-        stage('Deploy to Server') {
-            steps {
-                sshagent(['ssh-server-key']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "
-                            cd /app/mern-notes-app &&
-                            docker-compose pull &&
-                            docker-compose up -d
-                        "
-                    '''
-                }
+                sh '''
+                    docker compose -f $WORKSPACE/docker-compose.yml down
+                    docker compose -f $WORKSPACE/docker-compose.yml up -d
+                '''
             }
         }
     }
 
     post {
-        success {
-            echo '✅ Deployment successful!'
-        }
-        failure {
-            echo '❌ Build failed!'
-        }
+        success { echo '✅ App live on VM!' }
+        failure { echo '❌ Build failed!' }
     }
 }
