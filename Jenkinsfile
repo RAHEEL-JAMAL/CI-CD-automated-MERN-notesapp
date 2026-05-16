@@ -1,18 +1,33 @@
 pipeline {
     agent any
 
-    stages {
+    environment {
+        DOCKERHUB_USER = 'raheeljamal'
+    }
 
-        stage('Clone') {
-            steps {
-                git branch: 'main',
-                    url: 'https://github.com/RAHEEL-JAMAL/CI-CD-automated-MERN-notesapp.git'
-            }
-        }
+    stages {
 
         stage('Build Images') {
             steps {
                 sh 'docker compose -f $WORKSPACE/docker-compose.yml build'
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-cred',
+                    usernameVariable: 'USER',
+                    passwordVariable: 'PASS'
+                )]) {
+                    sh '''
+                        echo $PASS | docker login -u $USER --password-stdin
+                        docker tag mern-app-server $DOCKERHUB_USER/mern-server:latest
+                        docker tag mern-app-client $DOCKERHUB_USER/mern-client:latest
+                        docker push $DOCKERHUB_USER/mern-server:latest
+                        docker push $DOCKERHUB_USER/mern-client:latest
+                    '''
+                }
             }
         }
 
@@ -27,7 +42,7 @@ pipeline {
     }
 
     post {
-        success { echo '✅ App live on VM!' }
+        success { echo '✅ Built, pushed and deployed!' }
         failure { echo '❌ Build failed!' }
     }
 }
