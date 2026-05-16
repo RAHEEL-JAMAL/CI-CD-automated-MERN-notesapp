@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = 'your-dockerhub-username'
+        DOCKERHUB_USER = 'raheeljamal'
     }
 
     stages {
@@ -19,7 +19,7 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'docker-hub-cred',
+                    credentialsId: 'dockerhub-cred',
                     usernameVariable: 'USER',
                     passwordVariable: 'PASS'
                 )]) {
