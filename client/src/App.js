@@ -139,9 +139,11 @@ export default function App() {
   };
 
   return (
+
+    
     <div style={styles.body}>
       <header style={styles.header}>
-        <span style={styles.logo}>📝 MERN Notes</span>
+        <span style={styles.logo}>📝 baap hp tera samjhe beta use kr .</span>
         <span style={styles.badge}>MongoDB · Express · React · Node</span>
       </header>
 
