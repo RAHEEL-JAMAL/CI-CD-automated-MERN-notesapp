@@ -2,21 +2,24 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = 'raheeljamal'
+        DOCKERHUB_USER = 'your-dockerhub-username'
     }
 
     stages {
 
         stage('Build Images') {
             steps {
-                sh 'docker compose -f $WORKSPACE/docker-compose.yml build'
+                sh '''
+                    cd $WORKSPACE
+                    docker compose build
+                '''
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-cred',
+                    credentialsId: 'docker-hub-cred',
                     usernameVariable: 'USER',
                     passwordVariable: 'PASS'
                 )]) {
@@ -34,8 +37,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                    docker compose -f $WORKSPACE/docker-compose.yml down
-                    docker compose -f $WORKSPACE/docker-compose.yml up -d
+                    cd $WORKSPACE
+                    docker compose down
+                    docker compose up -d
                 '''
             }
         }
