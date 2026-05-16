@@ -25,8 +25,8 @@ pipeline {
                 )]) {
                     sh '''
                         echo $PASS | docker login -u $USER --password-stdin
-                        docker tag mern-app-server $DOCKERHUB_USER/mern-server:latest
-                        docker tag mern-app-client $DOCKERHUB_USER/mern-client:latest
+                        docker tag mern-notes-app-server $DOCKERHUB_USER/mern-server:latest
+                        docker tag mern-notes-app-client $DOCKERHUB_USER/mern-client:latest
                         docker push $DOCKERHUB_USER/mern-server:latest
                         docker push $DOCKERHUB_USER/mern-client:latest
                     '''
