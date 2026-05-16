@@ -19,7 +19,7 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-cred',
+                    credentialsId: 'docker-hub-cred',
                     usernameVariable: 'USER',
                     passwordVariable: 'PASS'
                 )]) {
@@ -39,8 +39,8 @@ pipeline {
                 sh '''
                     cd $WORKSPACE
                     docker compose down --remove-orphans || true
-                    docker stop $(docker ps -q) 2>/dev/null || true
-                    docker rm $(docker ps -aq) 2>/dev/null || true
+                    docker stop frontend backend mongodb 2>/dev/null || true
+                    docker rm frontend backend mongodb 2>/dev/null || true
                     docker compose up -d
                 '''
             }
